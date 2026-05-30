@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Payment</title>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+</head>
+
+<body>
+
+    <h1>Razorpay Payment</h1>
+
+    <input
+        type="text"
+        id="username"
+        placeholder="Username"
+    >
+
+    <br><br>
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Password"
+    >
+
+    <br><br>
+
+    <button onclick="login()">
+        Login
+    </button>
+
+    <br><br>
+
+    <button onclick="payNow()">
+        Pay ₹500
+    </button>
+
+    <script>
+
+        let token = ""
+
+        async function login() {
+
+            const response = await fetch(
+                "/api/auth/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        username: document.getElementById("username").value,
+                        password: document.getElementById("password").value
+                    })
+                }
+            )
+
+            const data = await response.json()
+
+            token = data.token
+
+            alert("Login Success")
+        }
+
+
+        async function payNow() {
+
+            const orderResponse = await fetch(
+                "/api/payment/create-order",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        amount: 500
+                    })
+                }
+            )
+
+            const order = await orderResponse.json()
+
+            const options = {
+
+                key: "RAZORPAY_KEY_ID",
+
+                amount: order.amount,
+
+                currency: "INR",
+
+                name: "Task Project",
+
+                order_id: order.id,
+
+                handler: async function (response) {
+
+                    await fetch(
+                        "/api/payment/save-payment",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer " + token
+                            },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                amount: 500
+                            })
+                        }
+                    )
+
+                    alert("Payment Success")
+                }
+            }
+
+            const rzp = new Razorpay(options)
+
+            rzp.open()
+        }
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,2 @@
+GOOGLE_CLIENT_ID="644967980751-p3t88kfmi5l5bkm1vc7pn1qrg1s79ksm.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET="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"

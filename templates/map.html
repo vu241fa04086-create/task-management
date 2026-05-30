@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Branches</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet/dist/leaflet.css"
+    >
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+</head>
+
+<body>
+
+    <div
+        id="map"
+        style="height: 600px;"
+    ></div>
+
+    <script>
+
+        const map = L.map('map').setView(
+            [13.0827, 80.2707],
+            5
+        )
+
+        L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        ).addTo(map)
+
+        const branches = {{ branches | tojson }}
+
+        branches.forEach(branch => {
+
+            L.marker(
+                [branch.lat, branch.lng]
+            )
+            .addTo(map)
+            .bindPopup(branch.name)
+
+        })
+
+    </script>
+
+</body>
+
+</html>
